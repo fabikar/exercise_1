@@ -1,0 +1,3 @@
+replicas: 5
+profile: prd
+host: prd.inpost.pl

@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: spring-boot-api
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - cluster: dev-global-cluster-0
+            env: dev
+          - cluster: prd-global-cluster-5
+            env: prd
+  template:
+    metadata:
+      name: "{{ .env }}-spring-boot-api"
+    spec:
+      project: inpost
+      sources:
+        - repoURL: git@gitlab.com:inpost/services/spring-boot-api-helm-chart.git
+          targetRevision: HEAD
+          path: helm
+          helm:
+            valueFiles:
+              - "$values/{{ .env }}-spring-boot-api/values.yaml"
+        - repoURL: git@gitlab.com:inpost/services/spring-boot-api-envs.git
+          targetRevision: HEAD
+          ref: values
+      destination:
+        name: "{{ .cluster }}"
+        namespace: spring-boot-api
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=true

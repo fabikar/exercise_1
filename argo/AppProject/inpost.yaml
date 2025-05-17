@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: inpost
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destinations:
+    - name: dev-global-cluster-0
+      namespace: spring-boot-api
+    - name: prd-global-cluster-5
+      namespace: spring-boot-api
+  sourceRepos:
+    - git@gitlab.com:inpost/services/spring-boot-api-helm-chart.git
+    - git@gitlab.com:inpost/services/spring-boot-api-envs.git
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
